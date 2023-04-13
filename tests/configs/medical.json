@@ -1,0 +1,9 @@
+{
+    "method": "lsd",
+    "budget": [3],
+    "kmeans": 3,
+    "dataset": "uciml_pima-indians-diabetes-database",
+    "tune": [1],
+    "seq_len": [16],
+    "semantic_on": [1]
+}

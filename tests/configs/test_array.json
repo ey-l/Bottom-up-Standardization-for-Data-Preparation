@@ -1,0 +1,10 @@
+{
+    "method": "lsv",
+    "budget": [1],
+    "kmeans": 3,
+    "dataset": "competitive-data-science-predict-future-sales",
+    "dataset_size": "small",
+    "tune": [1],
+    "seq_len": [2],
+    "semantic_on": [1]
+}

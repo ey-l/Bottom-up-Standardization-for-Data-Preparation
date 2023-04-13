@@ -1,0 +1,10 @@
+{
+    "method": "gk",
+    "budget": [5],
+    "kmeans": 5,
+    "dataset": "titanic",
+    "dataset_size": "large",
+    "tune": [1],
+    "seq_len": [16],
+    "semantic_on": [1]
+}

@@ -1,0 +1,81 @@
+import os
+for (dirname, _, filenames) in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+import pandas as pd
+_input1 = pd.read_csv('data/input/spaceship-titanic/train.csv')
+_input0 = pd.read_csv('data/input/spaceship-titanic/test.csv')
+print('Train: ', _input1.shape)
+print('Test: ', _input0.shape)
+_input1.head()
+_input0.head()
+_input1.isna().sum()
+_input0.isna().sum()
+_input1.info(verbose=True)
+_input0.info(verbose=True)
+_input1.head()
+
+def limpa(df):
+    df.Cabin = df.Cabin.fillna('X/9999/S', inplace=False)
+    df.Name = df.Name.fillna('Unknown Unknown', inplace=False)
+    df[['Deck', 'Cab_num', 'Side']] = df.Cabin.str.split('/', n=2, expand=True)
+    df['Cab_num'] = df['Cab_num'].astype('float')
+    df = df.drop('Cabin', axis=1, inplace=False)
+    df[['First_Name', 'Second_Name']] = df.Name.str.split(' ', n=1, expand=True)
+    df = df.drop(['Name', 'First_Name'], axis=1, inplace=False)
+    df['Second_Name'] = df.Second_Name.apply(lambda x: x.strip())
+    df.CryoSleep = df.CryoSleep.astype('boolean')
+    df.VIP = df.VIP.astype('boolean')
+    Family = df.Second_Name.value_counts()
+    group = Family.to_frame(name='Group')
+    group.index.name = 'Second_Name'
+    group = group.reset_index(level='Second_Name', inplace=False)
+    group.loc[group.Second_Name == 'Unknown', 'Group'] = 1
+    df = df.merge(group)
+    df['Family'] = df['Group'].apply(lambda x: 'Alone' if x == 1 else 'Little' if x <= 2 else 'Big')
+    df.Destination = df.Destination.fillna('Unknown', inplace=False)
+    df.HomePlanet = df.HomePlanet.fillna('Unknown', inplace=False)
+    df.CryoSleep = df.CryoSleep.fillna(False, inplace=False)
+    df.VIP = df.VIP.fillna(False, inplace=False)
+    df.CryoSleep = df.CryoSleep.astype('int')
+    df.VIP = df.VIP.astype('int')
+    idade_media = df.Age.mean()
+    Vr_medio_RoomService = df.RoomService.mean()
+    Vr_medio_FoodCourt = df.FoodCourt.mean()
+    Vr_medio_ShoppingMall = df.ShoppingMall.mean()
+    Vr_medio_Spa = df.Spa.mean()
+    Vr_medio_VRDeck = df.VRDeck.mean()
+    df.Age = df.Age.fillna(idade_media, inplace=False)
+    df.RoomService = df.RoomService.fillna(Vr_medio_RoomService, inplace=False)
+    df.FoodCourt = df.FoodCourt.fillna(Vr_medio_FoodCourt, inplace=False)
+    df.ShoppingMall = df.ShoppingMall.fillna(Vr_medio_ShoppingMall, inplace=False)
+    df.Spa = df.Spa.fillna(Vr_medio_Spa, inplace=False)
+    df.VRDeck = df.VRDeck.fillna(Vr_medio_VRDeck, inplace=False)
+    df_Side_dummies = pd.get_dummies(df.Side)
+    df_Side_dummies = df_Side_dummies.drop('S', axis=1, inplace=False)
+    df_HomePlanet_dummies = pd.get_dummies(df.HomePlanet)
+    df_HomePlanet_dummies = df_HomePlanet_dummies.drop('Unknown', axis=1, inplace=False)
+    df_Destination_dummies = pd.get_dummies(df.Destination)
+    df_Destination_dummies = df_Destination_dummies.drop('Unknown', axis=1, inplace=False)
+    df_Family_dummies = pd.get_dummies(df.Family)
+    df_Family_dummies = df_Family_dummies.drop('Big', axis=1, inplace=False)
+    df_Deck_dummies = pd.get_dummies(df.Deck)
+    df_Deck_dummies = df_Deck_dummies.drop('X', axis=1, inplace=False)
+    df = pd.concat([df, df_Side_dummies, df_HomePlanet_dummies, df_Destination_dummies, df_Family_dummies, df_Deck_dummies], axis=1)
+    return df
+_input1 = limpa(_input1)
+_input1.columns
+_input0 = limpa(_input0)
+_input0.head()
+_input1[['Family', 'Transported']].groupby(['Family'], as_index=False).mean().sort_values(by='Transported', ascending=False)
+y = _input1.Transported
+_input1.columns
+X = _input1.drop(['PassengerId', 'HomePlanet', 'Destination', 'Side', 'Second_Name', 'Group', 'Family', 'Deck', 'Transported'], axis=1)
+X.head()
+X.info(verbose=True)
+import numpy as np
+X.corr(method='kendall')
+from sklearn.model_selection import train_test_split
+(train_X, val_X, train_y, val_y) = train_test_split(X, y, random_state=1)
+from sklearn.ensemble import RandomForestClassifier
+rf_class_model = RandomForestClassifier()

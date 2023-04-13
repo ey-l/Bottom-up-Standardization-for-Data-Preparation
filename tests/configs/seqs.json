@@ -1,0 +1,9 @@
+{
+    "method": "lsv",
+    "budget": [1],
+    "kmeans": 1,
+    "dataset": "titanic",
+    "tune": [1],
+    "seq_len": [2],
+    "semantic_on": [1]
+}

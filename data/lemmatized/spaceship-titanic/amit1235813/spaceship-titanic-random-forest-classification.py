@@ -1,0 +1,42 @@
+import pandas as pd
+pd.set_option('display.max_columns', None)
+_input1 = pd.read_csv('data/input/spaceship-titanic/train.csv')
+data_ind_var = _input1.iloc[:, :-1]
+data_ind_var['train'] = 1
+data_ind_var
+counts = _input1.iloc[:, :-1].nunique()
+counts
+_input0 = pd.read_csv('data/input/spaceship-titanic/test.csv')
+_input0['train'] = 0
+_input0
+data_combined = pd.concat([data_ind_var, _input0])
+data_combined
+data_combined['group'] = data_combined.PassengerId.str.split('_').str[0]
+data_combined['group_count'] = data_combined.PassengerId.str.split('_').str[1]
+data_combined['deck'] = data_combined.Cabin.str.split('/').str[0]
+data_combined['cabin_number'] = data_combined.Cabin.str.split('/').str[1]
+data_combined['cabin_side'] = data_combined.Cabin.str.split('/').str[2]
+data_combined
+data_combined = data_combined.drop(['PassengerId', 'Cabin', 'Name'], axis=1, inplace=False)
+data_combined
+convert_dict = {'group': int, 'group_count': int}
+data_combined.astype(convert_dict)
+columns_list = list(data_combined.columns)
+data_combined = data_combined[columns_list[0:10] + columns_list[11:] + [columns_list[10]]]
+data_combined
+X_train = data_combined[data_combined['train'] == 1]
+X_test = data_combined[data_combined['train'] == 0]
+X_train = X_train.drop(['train'], axis=1, inplace=False)
+X_test = X_test.drop(['train'], axis=1, inplace=False)
+X_test
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import make_column_transformer
+A = make_column_transformer((OneHotEncoder(categories='auto', drop='first'), ['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'deck', 'cabin_side']), remainder='passthrough')
+X_train = A.fit_transform(X_train)
+X_train
+X_test = A.fit_transform(X_test)
+X_test
+from sklearn.impute import SimpleImputer
+import numpy as np
+imputer = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
+X_train = np.array(X_train)

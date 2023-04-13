@@ -1,0 +1,8 @@
+name: lucid-env
+dependencies:
+  - python=3.9
+  - anaconda
+  - pip
+  - pip:
+    - -r requirements_exp.txt
+    - -r requirements_lucidscript.txt
