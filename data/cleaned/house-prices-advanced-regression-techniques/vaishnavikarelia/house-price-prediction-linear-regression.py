@@ -1,0 +1,65 @@
+import pandas as pd
+train = pd.read_csv('_data/input/house-prices-advanced-regression-techniques/train.csv')
+train.head()
+test = pd.read_csv('_data/input/house-prices-advanced-regression-techniques/test.csv')
+id = test['Id'].astype(int)
+test.head()
+train.info()
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.options.display.float_format = '{:,.2f}'.format
+dups = train.duplicated()
+print('Total duplicate Values in the train dataset = ', dups.sum())
+print('Total missing values in train dataset = ', train.isnull().sum().sum())
+missing = pd.DataFrame(train.isnull().sum() / train.shape[0] * 100, columns=['Missing %'])
+missing.sort_values(by='Missing %', ascending=False, inplace=True)
+to_drop = missing[missing['Missing %'] >= 30].index.tolist()
+missing[missing['Missing %'] >= 30]
+train['PoolQC'].fillna('None', axis=0, inplace=True)
+train['MiscFeature'].fillna('None', axis=0, inplace=True)
+train['Alley'].fillna('None', axis=0, inplace=True)
+train['Fence'].fillna('None', axis=0, inplace=True)
+train['FireplaceQu'].fillna('None', axis=0, inplace=True)
+missing.drop(to_drop, axis=0, inplace=True)
+missing[missing['Missing %'] > 0]
+for i in missing[missing['Missing %'] > 0].index:
+    print(i, '====>', train[i].dtypes)
+train['GarageCond'].fillna('None', axis=0, inplace=True)
+train['GarageType'].fillna('None', axis=0, inplace=True)
+train['GarageFinish'].fillna('None', axis=0, inplace=True)
+train['GarageQual'].fillna('None', axis=0, inplace=True)
+train['BsmtFinType2'].fillna('None', axis=0, inplace=True)
+train['BsmtExposure'].fillna('None', axis=0, inplace=True)
+train['BsmtQual'].fillna('None', axis=0, inplace=True)
+train['BsmtCond'].fillna('None', axis=0, inplace=True)
+train['BsmtFinType1'].fillna('None', axis=0, inplace=True)
+missin = pd.DataFrame(train.isnull().sum())
+missin[missin[0] > 0]
+for i in missin[missin[0] > 0].index:
+    print(i, '===>', train[i].dtypes)
+import numpy as np
+train[['MasVnrType', 'Electrical']].describe(exclude=np.number)
+train['LotFrontage'].fillna(train['LotFrontage'].median(), axis=0, inplace=True)
+train['MasVnrType'].fillna(train['MasVnrType'].value_counts().index[0], axis=0, inplace=True)
+train['MasVnrArea'].fillna(train['MasVnrArea'].median(), axis=0, inplace=True)
+train['Electrical'].fillna(train['Electrical'].value_counts().index[0], axis=0, inplace=True)
+train['GarageYrBlt'].fillna(train['GarageYrBlt'].median(), axis=0, inplace=True)
+print('Total missing values in train dataset = ', train.isnull().sum().sum())
+numerical = train.describe().columns.tolist()
+for i in numerical:
+    print('\n', i)
+    print('=' * len(i))
+    print(train[i].unique())
+categorical = train.describe(exclude=np.number).columns.tolist()
+for i in categorical:
+    print('\n', i)
+    print('=' * len(i))
+    print(train[i].unique())
+train.info()
+X = train.drop(['Id', 'SalePrice'], axis=1)
+y = train['SalePrice']
+X[categorical] = X[categorical].astype('category')
+X[categorical] = X[categorical].apply(lambda x: x.cat.codes)
+X.head()
+from sklearn.linear_model import LinearRegression
+linear_model = LinearRegression(normalize=True)
