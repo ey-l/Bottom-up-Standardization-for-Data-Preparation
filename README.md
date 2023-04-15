@@ -7,7 +7,7 @@ In addition to our code, we use this repo as an appendix.
 ### Prompt to GPT-models
 
 ```
-	"I have a Python script that I would like you to edit. " \
+"I have a Python script that I would like you to edit. " \
     + 'The modified script should be able to run and maintain similar semantics to that of the unmodified version.' \
     + f"The script is from Kaggle's '{competition_full_name}' competition." \
     + "The goal is to make the script more standard regarding other scripts in the same competition. That means it should use common libraries, common functions, etc." \
@@ -24,3 +24,10 @@ We crawled the Jupyter notebooks associated with given topics. Notebooks of a gi
 * **Spaceship** is created from the ***Spaceship Titanic*** competition whose goal is to predict which passengers were transported from an imaginary spaceship using records recovered from its damaged computer system.
 * **Medical** is created from notebooks that use the ***Pima Indians Diabetes Database*** dataset with the goal of diagnostically predicting whether or not a patient has diabetes.
 
+### Input data files
+* **Titanic**: https://www.kaggle.com/c/titanic
+* **Sales**: https://www.kaggle.com/competitions/competitive-data-science-predict-future-sales
+* **House**: https://www.kaggle.com/c/house-prices-advanced-regression-techniques
+* **NLP**: https://www.kaggle.com/competitions/nlp-getting-started
+* **Spaceship**: https://www.kaggle.com/competitions/spaceship-titanic
+* **Medical**: https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database 
